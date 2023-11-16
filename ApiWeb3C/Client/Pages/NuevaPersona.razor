@@ -1,0 +1,72 @@
+﻿@page "/nueva"
+@page "/nueva/{Id:int}"
+@inject HttpClient _http;
+@inject NavigationManager _navegador;
+
+<h3>@letrero Persona</h3>
+
+<EditForm Model="lapersona" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText id="txtNombre" class="form-control" @bind-Value="lapersona.Nombre" />
+            <ValidationMessage For="()=>lapersona.Nombre" />
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="txtCorreo" class="col-sm-2 col-form-label">Correo</label>
+        <div class="col-sm-10">
+            <InputText id="txtCorreo" class="form-control" @bind-Value="lapersona.Correo" />
+            <ValidationMessage For="()=>lapersona.Correo" />
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="txtTelefono" class="col-sm-2 col-form-label">Teléfono</label>
+        <div class="col-sm-10">
+            <InputText id="txtTelefono" class="form-control" @bind-Value="lapersona.Telefono" />
+            <ValidationMessage For="()=>lapersona.Telefono" />
+        </div>
+    </div>
+    <button class="btn btn-success" type="submit">Guardar</button>
+    <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Persona lapersona = new();
+    private string letrero = "Nueva";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == 0)
+        {
+            letrero = "Nueva";
+            lapersona = new();
+        }
+        else
+        {
+            letrero = "Modificar";
+            lapersona = await _http.GetFromJsonAsync<Persona>($"api/personas/{Id}");
+        }
+    }
+
+    private async void Guardar()
+    {
+        if (Id == 0)
+        {
+            await _http.PostAsJsonAsync<Persona>("api/personas", lapersona);
+        }
+        else
+        {
+            await _http.PutAsJsonAsync<Persona>($"api/personas/{Id}", lapersona);
+        }
+        _navegador.NavigateTo("/");
+    }
+
+    private void Cancelar()
+    {
+        _navegador.NavigateTo("/");
+    }
+}

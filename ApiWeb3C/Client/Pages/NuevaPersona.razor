@@ -28,6 +28,18 @@
             <ValidationMessage For="()=>lapersona.Telefono" />
         </div>
     </div>
+    <div class="mb-3 row">
+        <label for="txtClasificacion" class="col-sm-2 col-form-label">Clasificación</label>
+        <div class="col-sm-10">
+            <InputSelect id="txtClasificacion" class="form-control" @bind-Value="lapersona.ClasificacionId">
+                @foreach(Clasificacion clasificacion in lasclasificaciones)
+                {
+                    <option value="@clasificacion.Id">@clasificacion.Nombre</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>lapersona.ClasificacionId" />
+        </div>
+    </div>
     <button class="btn btn-success" type="submit">Guardar</button>
     <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
 </EditForm>
@@ -37,13 +49,16 @@
     public int Id { get; set; }
     private Persona lapersona = new();
     private string letrero = "Nueva";
+    private List<Clasificacion> lasclasificaciones = new();
 
     protected override async Task OnParametersSetAsync()
     {
+        lasclasificaciones = await _http.GetFromJsonAsync<List<Clasificacion>>("api/Clasificaciones");
         if (Id == 0)
         {
             letrero = "Nueva";
             lapersona = new();
+            lapersona.ClasificacionId = lasclasificaciones[0].Id;
         }
         else
         {

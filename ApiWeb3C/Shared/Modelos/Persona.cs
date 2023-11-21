@@ -19,5 +19,9 @@ namespace ApiWeb3C.Shared.Modelos
         [Required(ErrorMessage ="Debe escribir el correo")]
         [StringLength(50)]
         public string? Correo { get; set; }
+
+        public int ClasificacionId { get; set; }
+        public virtual Clasificacion? Clasificacion { get; set; }
+
     }
 }

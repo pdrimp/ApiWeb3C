@@ -11,5 +11,6 @@ namespace ApiWeb3C.Server.Data
         }
 
         public DbSet<Persona> Personas { get; set; }
+        public DbSet<Clasificacion> Clasificaciones { get; set; }
     }
 }

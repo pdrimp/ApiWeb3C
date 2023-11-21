@@ -12,6 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<BasedeDatosContext>(
             options=>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
              );
+builder.Services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 var app = builder.Build();
 

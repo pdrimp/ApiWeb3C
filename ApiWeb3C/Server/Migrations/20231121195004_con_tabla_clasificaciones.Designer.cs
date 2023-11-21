@@ -3,6 +3,7 @@ using ApiWeb3C.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiWeb3C.Server.Migrations
 {
     [DbContext(typeof(BasedeDatosContext))]
-    partial class BasedeDatosContextModelSnapshot : ModelSnapshot
+    [Migration("20231121195004_con_tabla_clasificaciones")]
+    partial class con_tabla_clasificaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

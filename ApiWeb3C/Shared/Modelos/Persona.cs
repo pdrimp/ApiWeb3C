@@ -22,6 +22,7 @@ namespace ApiWeb3C.Shared.Modelos
 
         public int ClasificacionId { get; set; }
         public virtual Clasificacion? Clasificacion { get; set; }
+        public virtual ICollection<Habito>? Habitos { get; set; }
 
     }
 }

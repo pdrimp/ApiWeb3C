@@ -32,12 +32,23 @@
         <label for="txtClasificacion" class="col-sm-2 col-form-label">Clasificación</label>
         <div class="col-sm-10">
             <InputSelect id="txtClasificacion" class="form-control" @bind-Value="lapersona.ClasificacionId">
-                @foreach(Clasificacion clasificacion in lasclasificaciones)
+                @foreach (Clasificacion clasificacion in lasclasificaciones)
                 {
                     <option value="@clasificacion.Id">@clasificacion.Nombre</option>
                 }
             </InputSelect>
             <ValidationMessage For="()=>lapersona.ClasificacionId" />
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="txtHabito" class="col-sm-2 col-form-label">Hábitos</label>
+        <div class="col-sm-10">
+            <InputSelect id="txtHabito" class="form-control" @bind-Value="habitosseleccionados" multiselect="true">
+                @foreach (Habito habito in loshabitos)
+                {
+                    <option value="@habito.Id">@habito.Nombre</option>
+                }
+            </InputSelect>
         </div>
     </div>
     <button class="btn btn-success" type="submit">Guardar</button>
@@ -50,10 +61,13 @@
     private Persona lapersona = new();
     private string letrero = "Nueva";
     private List<Clasificacion> lasclasificaciones = new();
+    private List<Habito> loshabitos = new();
+    private string[] habitosseleccionados = new string[0];
 
     protected override async Task OnParametersSetAsync()
     {
         lasclasificaciones = await _http.GetFromJsonAsync<List<Clasificacion>>("api/Clasificaciones");
+        loshabitos = await _http.GetFromJsonAsync<List<Habito>>("api/habitos");
         if (Id == 0)
         {
             letrero = "Nueva";
@@ -71,6 +85,14 @@
     {
         if (Id == 0)
         {
+            if (habitosseleccionados.Length > 0)
+            {
+                lapersona.Habitos = new List<Habito>();
+                foreach (string idseleccionado in habitosseleccionados)
+                {
+                    lapersona.Habitos.Add(loshabitos.Find(r => r.Id == Int32.Parse(idseleccionado)));
+                }
+            }
             await _http.PostAsJsonAsync<Persona>("api/personas", lapersona);
         }
         else
@@ -83,5 +105,11 @@
     private void Cancelar()
     {
         _navegador.NavigateTo("/");
+    }
+
+    // Evento de cambio en la selección
+    private void SelectionChanged(ChangeEventArgs e)
+    {
+        habitosseleccionados = ((string[])e.Value) ?? new string[0];
     }
 }

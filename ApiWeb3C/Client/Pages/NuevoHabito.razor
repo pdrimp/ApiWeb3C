@@ -1,0 +1,56 @@
+﻿@page "/nuevo/habito"
+@page "/editar/habito/{Id:int}"
+@inject HttpClient _http;
+@inject NavigationManager _navegador;
+<h3>@mensaje Hábito</h3>
+<EditForm Model="elhabito" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText id="txtNombre" class="form-control" @bind-Value="elhabito.Nombre" />
+            <ValidationMessage For="()=>elhabito.Nombre" />
+        </div>
+    </div>
+    <button class="btn btn-success" type="submit">Guardar</button>
+    <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string mensaje = "Nuevo ";
+    private Habito elhabito = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == 0)
+        {
+            mensaje = "Nuevo";
+            elhabito = new();
+        }
+        else
+        {
+            mensaje = "Modificar";
+            elhabito = await _http.GetFromJsonAsync<Habito>($"api/habitos/{Id}");
+        }
+    }
+
+    private async void Guardar()
+    {
+        if (Id == 0)
+        {
+            await _http.PostAsJsonAsync<Habito>("api/habitos", elhabito);
+        }
+        else
+        {
+            await _http.PutAsJsonAsync<Habito>($"api/habitos/{Id}", elhabito);
+        }
+        _navegador.NavigateTo("/habitos");
+    }
+
+    private void Cancelar()
+    {
+        _navegador.NavigateTo("/habitos");
+    }
+}

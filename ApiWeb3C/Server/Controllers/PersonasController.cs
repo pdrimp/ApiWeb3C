@@ -25,21 +25,21 @@ namespace ApiWeb3C.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Persona>>> GetPersonas()
         {
-          if (_context.Personas == null)
-          {
-              return NotFound();
-          }
-            return await _context.Personas.Include(c=>c.Clasificacion).ToListAsync();
+            if (_context.Personas == null)
+            {
+                return NotFound();
+            }
+            return await _context.Personas.Include(c => c.Clasificacion).Include(h=>h.Habitos).ToListAsync();
         }
 
         // GET: api/Personas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Persona>> GetPersona(int id)
         {
-          if (_context.Personas == null)
-          {
-              return NotFound();
-          }
+            if (_context.Personas == null)
+            {
+                return NotFound();
+            }
             var persona = await _context.Personas.FindAsync(id);
 
             if (persona == null)
@@ -86,13 +86,26 @@ namespace ApiWeb3C.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Persona>> PostPersona(Persona persona)
         {
-          if (_context.Personas == null)
-          {
-              return Problem("Entity set 'BasedeDatosContext.Personas'  is null.");
-          }
+            if (_context.Personas == null)
+            {
+                return Problem("Entity set 'BasedeDatosContext.Personas'  is null.");
+            }
+            //Eliminar los habitos
+            List<Habito> habitos = new List<Habito>();
+            if (persona.Habitos != null)
+            {
+                habitos.AddRange(persona.Habitos);
+                persona.Habitos = null;
+            }
             _context.Personas.Add(persona);
             await _context.SaveChangesAsync();
 
+            //Agregar los hábitos
+            if (habitos.Any())
+            {
+                persona.Habitos = new List<Habito>(habitos);
+                await _context.SaveChangesAsync();
+            }
             return CreatedAtAction("GetPersona", new { id = persona.Id }, persona);
         }
 

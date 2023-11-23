@@ -19,6 +19,7 @@ else
                     <th>Correo</th>
                     <th>Teléfono</th>
                     <th>Clasificación</th>
+                    <th>Hábitos</th>
                     <th></th>
                 </tr>
             </thead>
@@ -30,6 +31,14 @@ else
                         <td>@persona.Correo</td>
                         <td>@persona.Telefono</td>
                         <td>@persona.Clasificacion.Nombre</td>
+                        <td>
+                            <ol>
+                                @foreach (Habito habito in persona.Habitos)
+                                {
+                                    <li>@habito.Nombre</li>
+                                }
+                            </ol>
+                        </td>
                         <td>
                             <button class="btn btn-sm" @onclick="()=>Eliminar(persona.Id)"><span class="oi oi-trash"></span></button>
                             <button class="btn btn-sm" @onclick="()=>Modificar(persona.Id)"><span class="oi oi-pencil"></span></button>

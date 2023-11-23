@@ -1,0 +1,69 @@
+﻿@page "/habitos"
+@inject HttpClient _http;
+@inject NavigationManager _navegar;
+<h3>Hábitos</h3>
+
+@if (cargando)
+{
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+}
+else
+{
+    @if (loshabitos.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Habito habito in loshabitos)
+                {
+                    <tr>
+                        <td>@habito.Nombre</td>
+                        <td>
+                            <button class="btn btn-sm" @onclick="()=>Eliminar(habito.Id)"><span class="oi oi-trash"></span></button>
+                            <button class="btn btn-sm" @onclick="()=>Modificar(habito.Id)"><span class="oi oi-pencil"></span></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h2>No existen hábitos registrados</h2>
+    }
+}
+
+@code {
+    private List<Habito>? loshabitos = new();
+    private bool cargando = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    private async Task Cargar()
+    {
+        loshabitos = await _http.GetFromJsonAsync<List<Habito>>("api/habitos");
+        cargando = false;
+    }
+
+    private async Task Eliminar(int id)
+    {
+        cargando = true;
+        await _http.DeleteAsync($"api/habitos/{id}");
+        await Cargar();
+    }
+
+    private void Modificar(int id)
+    {
+        _navegar.NavigateTo($"/editar/habitos/{id}");
+    }
+}
